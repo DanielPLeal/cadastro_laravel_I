@@ -7,17 +7,18 @@ use App\Produto;
 use App\Categoria;
 
 class ControladorProduto extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+{    
+    public function indexView()
     {
         $cats = Categoria::all();
         $prods = Produto::all();
         return view('produtos', compact('prods', 'cats'));
+    }
+
+    public function index()
+    {
+        $prods = Produto::all();
+        return $prods->toJson();
     }
 
     /**
@@ -38,14 +39,14 @@ class ControladorProduto extends Controller
      */
     public function store(Request $request)
     {
-        $cats = Categoria::all();
+        //$cats = Categoria::all();
         $prod = new Produto();
-        $prod->nome = $request->input('nomeProduto');
-        $prod->estoque = $request->input('qtdeEstoque');
-        $prod->preco = $request->input('precoPrduto');
-        $prod->categoria_id = $request->input('categoria');
+        $prod->nome = $request->input('nome');
+        $prod->estoque = $request->input('estoque');
+        $prod->preco = $request->input('preco');
+        $prod->categoria_id = $request->input('categoria_id');
         $prod->save();
-        return redirect('produtos');
+        return json_encode($prod);
     }
 
     /**
@@ -56,7 +57,11 @@ class ControladorProduto extends Controller
      */
     public function show($id)
     {
-        //
+        $prod = Produto::find($id);
+        if (isset($prod)) {
+            return json_encode($prod);         
+        }
+        return response('Produto não encontrado', 404);
     }
 
     /**
@@ -86,13 +91,14 @@ class ControladorProduto extends Controller
     {
         $prod = Produto::find($id);
         if (isset($prod)) {
-            $prod->nome = $request->input('nomeProduto');
-            $prod->estoque = $request->input('qtdeEstoque');
-            $prod->preco = $request->input('precoPrduto');
-            $prod->categoria_id = $request->input('categoria');
-            $prod->save();            
+            $prod->nome = $request->input('nome');
+            $prod->estoque = $request->input('estoque');
+            $prod->preco = $request->input('preco');
+            $prod->categoria_id = $request->input('categoria_id');
+            $prod->save();
+            return json_encode($prod);         
         }
-        return redirect('/produtos');
+        return response('Produto não encontrado', 404);
     }
 
     /**
@@ -106,7 +112,9 @@ class ControladorProduto extends Controller
         $prod = Produto::find($id);
         if (isset($prod)) {
             $prod->delete();
+            return response('OK', 200);
         }
-        return redirect('/produtos');
+        return response('Produto não encontrado', 404);
+        
     }
 }

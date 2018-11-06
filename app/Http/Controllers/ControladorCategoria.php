@@ -14,7 +14,8 @@ class ControladorCategoria extends Controller
     public function index()
     {
         $cats = Categoria::all();
-        return view('categorias', compact('cats')); }
+        return view('categorias', compact('cats')); 
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -96,5 +97,11 @@ class ControladorCategoria extends Controller
             $cat->delete();
         }
         return redirect('/categorias');
+    }
+
+    public function indexJson()
+    {
+        $cats = Categoria::all();
+        return json_encode($cats); 
     }
 }
